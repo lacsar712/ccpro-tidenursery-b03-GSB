@@ -6,6 +6,7 @@ from app.models.feed_event import FeedEvent
 from app.models.hatchery import Hatchery
 from app.models.pond import Pond
 from app.models.user import User
+from app.models.volume_change_request import VolumeChangeRequest
 from app.models.water_sample import WaterSample
 
 
@@ -76,9 +77,21 @@ def seed() -> None:
             db.add_all([p1, p2, p3, p4])
             db.flush()
 
+            technician = db.query(User).filter(User.username == "technician").first()
+
             now = datetime.now(timezone.utc)
             db.add_all(
                 [
+                    # 种子一张待审体积变更单：A-02 60.0 -> 72.0
+                    VolumeChangeRequest(
+                        pond_id=p2.id,
+                        original_volume_m3=p2.volume_m3,
+                        requested_volume_m3=72.0,
+                        reason="隔离塘改造扩容，增加缓冲水体",
+                        status="pending",
+                        applicant_id=technician.id,
+                        created_at=now - timedelta(hours=2),
+                    ),
                     WaterSample(
                         pond_id=p1.id,
                         sampled_at=now - timedelta(hours=3),

@@ -75,6 +75,12 @@ def update_pond(
     if not item:
         raise HTTPException(status_code=404, detail="塘口不存在")
     data = payload.model_dump(exclude_unset=True)
+    if "volume_m3" in data:
+        # 塘口体积不允许直接修改，必须走体积变更审批单
+        raise HTTPException(
+            status_code=403,
+            detail="塘口体积不允许直接修改，请发起体积变更审批单（/api/volume-change-requests）",
+        )
     if "hatchery_id" in data:
         hatchery = db.query(Hatchery).filter(Hatchery.id == data["hatchery_id"]).first()
         if not hatchery:

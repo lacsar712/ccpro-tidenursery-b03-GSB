@@ -47,3 +47,18 @@ export type DashboardStats = {
   samplesLast24h: number
   feedKgLast7d: number
 }
+
+export type VolumeChangeRequest = {
+  id: number
+  pondId: number
+  originalVolumeM3: number
+  requestedVolumeM3: number
+  reason: string
+  status: 'pending' | 'approved' | 'rejected'
+  applicantId: number
+  applicantName?: string | null
+  approverId?: number | null
+  approverName?: string | null
+  createdAt: string
+  decidedAt?: string | null
+}

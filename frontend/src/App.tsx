@@ -6,6 +6,7 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Hatcheries from './pages/Hatcheries'
 import Ponds from './pages/Ponds'
+import VolumeRequests from './pages/VolumeRequests'
 import WaterSamples from './pages/WaterSamples'
 import FeedEvents from './pages/FeedEvents'
 
@@ -29,6 +30,7 @@ export default function App() {
         <Route index element={<Dashboard />} />
         <Route path="hatcheries" element={<Hatcheries />} />
         <Route path="ponds" element={<Ponds />} />
+        <Route path="volume-requests" element={<VolumeRequests />} />
         <Route path="water-samples" element={<WaterSamples />} />
         <Route path="feed-events" element={<FeedEvents />} />
       </Route>

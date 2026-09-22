@@ -46,11 +46,26 @@ docker compose up --build
 3. **Pond 育苗塘**：`hatcheryId`、`pondCode`、`species`、`volumeM3`、`status(stocked|dry|quarantine)`；同场 `pondCode` 唯一
 4. **WaterSample 水质样**：`pondId`、`sampledAt`、`tempC`、`salinityPpt`、`doMgL`、`ph`、`notes`；`doMgL > 0` 且 `ph ∈ [6,9]`，否则返回 **400**
 5. **FeedEvent 投喂**：`pondId`、`fedAt`、`feedType`、`amountKg`、`operatorName`
-6. **Dashboard**：塘总数、quarantine 数、近 24h 采样数、近 7 日投喂总量 kg
+6. **VolumeChangeRequest 塘口体积变更审批**：见下方「体积变更审批口径」
+7. **Dashboard**：塘总数、quarantine 数、近 24h 采样数、近 7 日投喂总量 kg
+
+## 体积变更审批口径
+
+- **塘口体积（`Pond.volumeM3`）不允许直接改库 / 直接调接口修改**，只能凭「体积变更审批单」通过后落地。
+- 对 `PUT /api/ponds/{id}` 携带 `volumeM3` 的请求一律返回 **403**，正文提示走审批（`/api/volume-change-requests`）。
+- 审批单字段：所属塘口、原体积、申请体积、理由、状态（`pending` 待审 / `approved` 通过 / `rejected` 驳回）、申请人、审批人（可空，终态前为空）。
+- 校验：申请体积必须 **大于 0** 且 **与原体积不同**；理由**去空白后至少 6 个字**，否则 400。
+- 同塘同时只允许一张待审单（数据库部分唯一索引兜底），重复申请返回 **409**。
+- 角色：**技术员（technician）可发起申请**；**场长（admin）可通过 / 驳回**，越权审批返回 403。
+- 场长**通过**时在**同一数据库事务**内把塘口体积改为申请体积并记录审批人/审批时间；**驳回不改体积**。
+- 已终态（通过/驳回）的审批单不可再改，重复审批返回 **409**。
+- 种子数据自带一张待审单（A-02：60.0 → 72.0 m³）。
+- 前端可从侧栏「体积变更审批」或塘页每行「申请变更体积」发起。
+
 
 ## 前端页面
 
-Login · Dashboard · Hatcheries · Ponds · WaterSamples · FeedEvents
+Login · Dashboard · Hatcheries · Ponds · VolumeRequests（体积变更审批） · WaterSamples · FeedEvents
 
 ## 本地开发（可选）
 

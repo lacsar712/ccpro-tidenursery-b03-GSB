@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { api } from '../api/client'
 import type { Hatchery, Pond } from '../types'
 
@@ -11,6 +12,7 @@ const empty = {
 }
 
 export default function Ponds() {
+  const navigate = useNavigate()
   const [hatcheries, setHatcheries] = useState<Hatchery[]>([])
   const [rows, setRows] = useState<Pond[]>([])
   const [form, setForm] = useState(empty)
@@ -64,7 +66,16 @@ export default function Ponds() {
     <div>
       <header className="page-header">
         <h1>育苗塘</h1>
-        <p className="muted">同场塘口号唯一；状态：stocked / dry / quarantine</p>
+        <p className="muted">
+          同场塘口号唯一；状态：stocked / dry / quarantine；体积变更须走
+          <button
+            className="btn ghost"
+            style={{ margin: '0 6px', padding: '2px 8px' }}
+            onClick={() => navigate('/volume-requests')}
+          >
+            体积变更审批
+          </button>
+        </p>
       </header>
       {error && <div className="error">{error}</div>}
 
@@ -138,7 +149,7 @@ export default function Ponds() {
               <th>品种</th>
               <th>体积 m³</th>
               <th>状态</th>
-              <th />
+              <th>操作</th>
             </tr>
           </thead>
           <tbody>
@@ -153,6 +164,13 @@ export default function Ponds() {
                   <span className={`badge ${r.status}`}>{r.status}</span>
                 </td>
                 <td>
+                  <button
+                    className="btn ghost"
+                    style={{ marginRight: 8 }}
+                    onClick={() => navigate(`/volume-requests?pondId=${r.id}`)}
+                  >
+                    申请变更体积
+                  </button>
                   <button className="btn ghost" onClick={() => remove(r.id)}>
                     删除
                   </button>
