@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { clearToken } from '../api/client'
+import { clearAuth } from '../api/client'
 
 const links = [
   { to: '/', label: '看板', end: true },
@@ -7,6 +7,7 @@ const links = [
   { to: '/ponds', label: '育苗塘' },
   { to: '/water-samples', label: '水质样' },
   { to: '/feed-events', label: '投喂事件' },
+  { to: '/volume-approvals', label: '体积变更审批' },
 ]
 
 export default function Layout() {
@@ -37,7 +38,7 @@ export default function Layout() {
         <button
           className="logout-btn"
           onClick={() => {
-            clearToken()
+            clearAuth()
             navigate('/login')
           }}
         >

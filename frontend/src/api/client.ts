@@ -1,4 +1,5 @@
 const TOKEN_KEY = 'tn_token'
+const USER_KEY = 'tn_user'
 
 export function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY)
@@ -10,6 +11,50 @@ export function setToken(token: string) {
 
 export function clearToken() {
   localStorage.removeItem(TOKEN_KEY)
+}
+
+export type AuthUser = {
+  id: number
+  username: string
+  role: string
+  display_name: string
+}
+
+export function getUser(): AuthUser | null {
+  const raw = localStorage.getItem(USER_KEY)
+  if (!raw) return null
+  try {
+    return JSON.parse(raw) as AuthUser
+  } catch {
+    return null
+  }
+}
+
+export function setUser(user: AuthUser) {
+  localStorage.setItem(USER_KEY, JSON.stringify(user))
+}
+
+export function clearAuth() {
+  clearToken()
+  localStorage.removeItem(USER_KEY)
+}
+
+let userPromise: Promise<AuthUser | null> | null = null
+
+// 已登录但本地无用户信息（旧会话）时，用 /me 引导一次
+export function ensureUser(): Promise<AuthUser | null> {
+  const cached = getUser()
+  if (cached) return Promise.resolve(cached)
+  if (!getToken()) return Promise.resolve(null)
+  if (!userPromise) {
+    userPromise = api<AuthUser>('/api/auth/me')
+      .then((u) => {
+        setUser(u)
+        return u
+      })
+      .catch(() => null)
+  }
+  return userPromise
 }
 
 export async function api<T>(

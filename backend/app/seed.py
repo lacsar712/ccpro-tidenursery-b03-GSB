@@ -6,6 +6,7 @@ from app.models.feed_event import FeedEvent
 from app.models.hatchery import Hatchery
 from app.models.pond import Pond
 from app.models.user import User
+from app.models.volume_change_request import VolumeChangeRequest
 from app.models.water_sample import WaterSample
 
 
@@ -131,6 +132,21 @@ def seed() -> None:
             )
             db.commit()
             print("Seed data inserted.")
+
+            technician = db.query(User).filter(User.username == "technician").first()
+            if db.query(VolumeChangeRequest).count() == 0 and technician is not None:
+                db.add(
+                    VolumeChangeRequest(
+                        pond_id=p1.id,
+                        original_volume_m3=p1.volume_m3,
+                        requested_volume_m3=95.0,
+                        reason="清淤后实测蓄水深度增加，申请核定体积上调",
+                        status="pending",
+                        applicant_id=technician.id,
+                    )
+                )
+                db.commit()
+                print("Seed volume change request inserted.")
         else:
             print("Seed skipped (data exists).")
     finally:

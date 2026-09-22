@@ -55,3 +55,12 @@ def get_current_user(
     if not user:
         raise credentials_exception
     return user
+
+
+def require_role(*roles: str):
+    def role_checker(current_user: User = Depends(get_current_user)) -> User:
+        if current_user.role not in roles:
+            raise HTTPException(status_code=403, detail="无权限执行该操作")
+        return current_user
+
+    return role_checker

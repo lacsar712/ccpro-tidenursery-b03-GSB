@@ -200,6 +200,72 @@ select {
   border: 1px solid var(--line);
 }
 
+.btn.danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.btn.small {
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.row-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.notice {
+  background: #e7f7f1;
+  color: #1a7a6c;
+  border: 1px solid #b8e6d9;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 12px 0;
+}
+
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  margin: 16px 0 12px;
+}
+
+.filter-btn.active {
+  background: var(--sea-mist);
+  border-color: var(--sea-cyan);
+  color: var(--sea-deep);
+}
+
+.readonly-tag {
+  margin-left: 8px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 11px;
+  background: #eef2f4;
+  color: #607078;
+  cursor: help;
+}
+
+.center {
+  text-align: center;
+}
+
+.badge.vcr-pending {
+  background: #fff1e0;
+  color: var(--warn);
+}
+
+.badge.vcr-approved {
+  background: #e3f7f4;
+  color: #1a7a6c;
+}
+
+.badge.vcr-rejected {
+  background: #fdeceb;
+  color: var(--danger);
+}
+
 .table-wrap {
   overflow: auto;
 }

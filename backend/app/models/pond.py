@@ -24,3 +24,8 @@ class Pond(Base):
     feed_events: Mapped[List["FeedEvent"]] = relationship(
         "FeedEvent", back_populates="pond", cascade="all, delete-orphan"
     )
+    volume_change_requests: Mapped[List["VolumeChangeRequest"]] = relationship(
+        "VolumeChangeRequest",
+        foreign_keys="VolumeChangeRequest.pond_id",
+        back_populates="pond",
+    )

@@ -1,5 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { api } from '../api/client'
+import { useCurrentUser } from '../hooks/useCurrentUser'
 import type { Hatchery, Pond } from '../types'
 
 const empty = {
@@ -11,6 +13,9 @@ const empty = {
 }
 
 export default function Ponds() {
+  const navigate = useNavigate()
+  const user = useCurrentUser()
+  const isTechnician = user?.role === 'technician'
   const [hatcheries, setHatcheries] = useState<Hatchery[]>([])
   const [rows, setRows] = useState<Pond[]>([])
   const [form, setForm] = useState(empty)
@@ -64,7 +69,9 @@ export default function Ponds() {
     <div>
       <header className="page-header">
         <h1>育苗塘</h1>
-        <p className="muted">同场塘口号唯一；状态：stocked / dry / quarantine</p>
+        <p className="muted">
+          同场塘口号唯一；状态：stocked / dry / quarantine。体积（m³）为只读字段，变更须走「体积变更审批」，经场长通过后生效。
+        </p>
       </header>
       {error && <div className="error">{error}</div>}
 
@@ -109,6 +116,7 @@ export default function Ponds() {
             onChange={(e) => setForm({ ...form, volumeM3: Number(e.target.value) })}
             required
           />
+          <span className="hint">建档后体积不可直改，须走体积变更审批</span>
         </label>
         <label>
           状态
@@ -148,14 +156,31 @@ export default function Ponds() {
                 <td>{hatcheryName(r.hatcheryId)}</td>
                 <td>{r.pondCode}</td>
                 <td>{r.species}</td>
-                <td>{r.volumeM3}</td>
+                <td>
+                  {r.volumeM3}
+                  <span className="readonly-tag" title="体积变更须走审批单">
+                    只读
+                  </span>
+                </td>
                 <td>
                   <span className={`badge ${r.status}`}>{r.status}</span>
                 </td>
                 <td>
-                  <button className="btn ghost" onClick={() => remove(r.id)}>
-                    删除
-                  </button>
+                  <div className="row-actions">
+                    {isTechnician && (
+                      <button
+                        className="btn ghost small"
+                        onClick={() =>
+                          navigate(`/volume-approvals?pondId=${r.id}`)
+                        }
+                      >
+                        申请改体积
+                      </button>
+                    )}
+                    <button className="btn ghost small" onClick={() => remove(r.id)}>
+                      删除
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
